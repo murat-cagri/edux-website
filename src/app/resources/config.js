@@ -29,7 +29,7 @@ const style = {
   theme: "dark", // dark | light - not needed when using ThemeProvider
   neutral: "gray", // sand | gray | slate
   brand: "blue", // blue | indigo | violet | magenta | pink | red | orange | yellow | moss | green | emerald | aqua | cyan
-  accent: "indigo", // blue | indigo | violet | magenta | pink | red | orange | yellow | moss | green | emerald | aqua | cyan
+  accent: "aqua", // blue | indigo | violet | magenta | pink | red | orange | yellow | moss | green | emerald | aqua | cyan
   solid: "contrast", // color | contrast | inverse
   solidStyle: "flat", // flat | plastic
   border: "playful", // rounded | playful | conservative
@@ -95,20 +95,4 @@ const meta = {
   // add more routes and reference them in page.tsx
 };
 
-// default schema data
-const schema = {
-  logo: "",
-  type: "Organization",
-  name: "Once UI",
-  description: meta.home.description,
-  email: "lorant@once-ui.com",
-};
-
-// social links
-const social = {
-  twitter: "https://www.twitter.com/_onceui",
-  linkedin: "https://www.linkedin.com/company/once-ui/",
-  discord: "https://discord.com/invite/5EyAQ4eNdS",
-};
-
-export { baseURL, font, style, meta, schema, social, effects };
+export { baseURL, font, style, meta, effects };

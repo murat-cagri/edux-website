@@ -31,11 +31,16 @@ import {
   HiOutlineComputerDesktop,
 } from "react-icons/hi2";
 
+import { LuBrainCircuit } from "react-icons/lu";
+
 import { RiVisaLine } from "react-icons/ri";
 
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
 
 import { LuChevronsLeftRight } from "react-icons/lu";
+
+import { FaTools } from "react-icons/fa";
+
 
 export const iconLibrary: Record<string, IconType> = {
   chevronUp: HiChevronUp,
@@ -70,7 +75,9 @@ export const iconLibrary: Record<string, IconType> = {
   visa: RiVisaLine,
   security: HiOutlineShieldCheck,
   sparkle: HiOutlineSparkles,
-  computer: HiOutlineComputerDesktop
+  brain: LuBrainCircuit,
+  computer: HiOutlineComputerDesktop,
+  tool: FaTools
 };
 
 export type IconLibrary = typeof iconLibrary;

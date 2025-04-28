@@ -23,11 +23,6 @@ const ThemeSwitcher = forwardRef<HTMLDivElement, ThemeSwitchProps>(
         {...rest}
       >
         <IconButton
-          icon="computer"
-          variant={theme === "system" ? "primary" : "tertiary"}
-          onClick={() => setTheme("system")}
-        />
-        <IconButton
           icon="dark"
           variant={theme === "dark" ? "primary" : "tertiary"}
           onClick={() => setTheme("dark")}
