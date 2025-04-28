@@ -38,6 +38,7 @@ export default function Home() {
     })
   }
 
+  // @ts-ignore
   return (
     <Column fillWidth paddingY="104" paddingX="s" horizontal="center" flex={1}>
       <ScrollToTop>
@@ -64,8 +65,6 @@ export default function Home() {
         horizontal="center"
         zIndex={3}
         background={isScrolled ? "surface" : undefined}
-        shadow={isScrolled ? "shadow-md" : undefined}
-        transition="all 0.3s ease"
       >
         <Row
           data-border="rounded"
@@ -159,7 +158,7 @@ export default function Home() {
               Edux: Where Learning Meets Innovation
             </Heading>
             <Text align="center" maxWidth="xl" marginBottom="24">
-              In today's fast-paced world, learning and staying ahead require more than just access to resources.
+              In today&#39;s fast-paced world, learning and staying ahead require more than just access to resources.
               Edux combines AI-powered explanations, personalized study schedules, and interactive tools to make
               your educational journey more efficient, engaging, and effective.
             </Text>
@@ -240,11 +239,6 @@ export default function Home() {
                 direction="column"
                 border="neutral-alpha-weak"
                 radius="xl"
-                hover={{
-                  shadow: "l",
-                  scale: 1.02,
-                  transition: "all 0.3s ease"
-                }}
               >
                 <Icon name="tool" size="xl" color="success-medium" />
                 <Heading as="h3" variant="heading-default-m">

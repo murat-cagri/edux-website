@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "biome-write": "npx @biomejs/biome format --write .",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.1",
@@ -31,6 +32,7 @@
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.2",
     "eslint": "^9.25.1",
+    "eslint-config-next": "^15.3.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-react": "^7.37.5",
     "postcss-custom-media": "^10.0.7",
