@@ -285,7 +285,7 @@ export default function Home() {
               How Edux Works
             </Heading>
             <Text onBackground="neutral-medium" marginBottom="24">
-              While the internet and digital platforms have made educational content more accessible than ever, they've
+              While the internet and digital platforms have made educational content more accessible than ever, they&#39;ve
               also created an ocean of information that often overwhelms learners. Juggling multiple resources, managing
               time, and ensuring progress can be intimidating.
             </Text>
