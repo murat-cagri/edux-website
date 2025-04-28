@@ -40,7 +40,7 @@ export default function Home() {
 
   // @ts-ignore
   return (
-    <Column fillWidth paddingY="104" paddingX="s" horizontal="center" flex={1}>
+    <Column fillWidth paddingY="80" paddingX="s" horizontal="center" flex={1}>
       <ScrollToTop>
         <IconButton variant="secondary" icon="chevronUp" />
       </ScrollToTop>
@@ -162,7 +162,7 @@ export default function Home() {
               Edux combines AI-powered explanations, personalized study schedules, and interactive tools to make
               your educational journey more efficient, engaging, and effective.
             </Text>
-            <Row marginY="24">
+            <Row marginY="32">
               <Button
                 id="getStarted"
                 label="Get Started"
@@ -174,7 +174,7 @@ export default function Home() {
           </Column>
 
           {/* Features Section */}
-          <Column fillWidth paddingX="32" gap="12" horizontal="center" position="relative">
+          <Column fillWidth paddingX="32" gap="12" horizontal="center" position="relative" paddingY="16">
             <Heading as="h2" variant="display-default-m">
               Features
             </Heading>
@@ -247,8 +247,7 @@ export default function Home() {
         <Row
           paddingX="32"
           fillWidth
-          paddingY="160"
-          gap="64"
+          paddingY="128"
           position="relative"
           mobileDirection="column"
           vertical="center"
