@@ -79,12 +79,12 @@ export default function Home() {
           <Row gap="16" hide="s">
             <Button href="/reports" size="s" label="Reports" weight="default" variant="tertiary" />
             <Button href="/about" size="s" label="About" weight="default" variant="tertiary" />
-            <ThemeSwitcher size="s" />
+            <ThemeSwitcher />
           </Row>
           <Row gap="16" show="s" horizontal="center" paddingRight="24">
             <IconButton href="/reports" icon="fileText" variant="tertiary" tooltip="Reports" />
             <IconButton href="/about" icon="info" variant="tertiary" tooltip="About" />
-            <ThemeSwitcher size="s" />
+            <ThemeSwitcher />
           </Row>
         </Row>
       </Row>
@@ -157,7 +157,7 @@ export default function Home() {
             <Heading wrap="balance" variant="display-strong-xl" align="center" marginBottom="16">
               Edux: Where Learning Meets Innovation
             </Heading>
-            <Text align="center" maxWidth="xl" marginBottom="24">
+            <Text align="center" marginBottom="24">
               In today&#39;s fast-paced world, learning and staying ahead require more than just access to resources.
               Edux combines AI-powered explanations, personalized study schedules, and interactive tools to make
               your educational journey more efficient, engaging, and effective.
@@ -191,11 +191,6 @@ export default function Home() {
                 direction="column"
                 border="neutral-alpha-weak"
                 radius="xl"
-                hover={{
-                  shadow: "l",
-                  scale: 1.02,
-                  transition: "all 0.3s ease"
-                }}
               >
                 <Icon name="brain" size="xl" color="brand-medium" />
                 <Heading as="h3" variant="heading-default-m">
@@ -215,11 +210,6 @@ export default function Home() {
                 direction="column"
                 border="neutral-alpha-weak"
                 radius="xl"
-                hover={{
-                  shadow: "l",
-                  scale: 1.02,
-                  transition: "all 0.3s ease"
-                }}
               >
                 <Icon name="calendar" size="xl" color="accent-medium" />
                 <Heading as="h3" variant="heading-default-m">
