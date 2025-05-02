@@ -269,7 +269,7 @@ export default function Home() {
               height: "1.25%",
             }}
           />
-          <Column fillWidth gap="32" flex={1}>
+          <Column fillWidth gap="32" flex={1} className="p-2">
             <Heading as="h2" variant="display-default-m">
               How Edux Works
             </Heading>
