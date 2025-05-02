@@ -83,7 +83,7 @@ const effects = {
 const meta = {
   home: {
     path: "/",
-    title: "edux",
+    title: "Edux",
     description: "An open-source design system and component library for Next.js that emphasizes easy styling and accessibility in UI development.",
     image: "/og/home.jpg",
     canonical: "https://once-ui.com",
