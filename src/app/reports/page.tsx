@@ -14,14 +14,14 @@ import {
   ThemeSwitcher,
   Background,
 } from "@/once-ui/components"
-import { Download, FileText, ArrowLeft } from "lucide-react"
+import { Download, FileText, ArrowLeft, BookOpen, PresentationIcon } from "lucide-react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export default function ReportsPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-  const [pdfFiles, setPdfFiles] = useState<any[]>([])
+  const [files, setFiles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function ReportsPage() {
       setIsVisible(true)
     }, 100)
 
-    // Fetch PDF files from the files directory
-    fetchPdfFiles()
+    // Fetch files from the files directory
+    fetchFiles()
 
     return () => {
       window.removeEventListener("scroll", handleScroll)
@@ -45,16 +45,23 @@ export default function ReportsPage() {
     }
   }, [])
 
-  const fetchPdfFiles = async () => {
+  const fetchFiles = async () => {
     try {
-      const response = await fetch("/api/pdf-files")
-      if (!response.ok) {
-        throw new Error("Failed to fetch PDF files")
-      }
+      const response = await fetch("/api/files")
       const data = await response.json()
-      setPdfFiles(data.files)
+      setFiles(data.files)
     } catch (error) {
-      console.error("Error fetching PDF files:", error)
+      console.error("Error fetching files:", error)
+      // Fallback to the original PDF files endpoint if the new one fails
+      try {
+        const pdfResponse = await fetch("/api/pdf-files")
+        if (pdfResponse.ok) {
+          const pdfData = await pdfResponse.json()
+          setFiles(pdfData.files)
+        }
+      } catch (pdfError) {
+        console.error("Error fetching PDF files:", pdfError)
+      }
     } finally {
       setLoading(false)
     }
@@ -70,18 +77,15 @@ export default function ReportsPage() {
     document.body.removeChild(link)
   }
 
-  // Function to get a color based on file name
-  const getColorForFile = (fileName: string) => {
-    const colors = [
-      "from-purple-400 to-purple-600",
-      "from-blue-400 to-blue-600",
-      "from-green-400 to-green-600",
-      "from-amber-400 to-amber-600",
-      "from-red-400 to-red-600",
-      "from-indigo-400 to-indigo-600",
-      "from-pink-400 to-pink-600",
-      "from-teal-400 to-teal-600",
-    ]
+  // Function to get a color based on file name and type
+  const getColorForFile = (fileName: string, fileType: string) => {
+    const colorSets = {
+      report: ["from-purple-400 to-purple-600", "from-blue-400 to-blue-600", "from-indigo-400 to-indigo-600"],
+      logbook: ["from-green-400 to-green-600", "from-teal-400 to-teal-600", "from-emerald-400 to-emerald-600"],
+      presentation: ["from-amber-400 to-amber-600", "from-orange-400 to-orange-600", "from-red-400 to-red-600"],
+    }
+
+    const colors = colorSets[fileType as keyof typeof colorSets] || colorSets.report
 
     // Simple hash function to get consistent color for the same file name
     let hash = 0
@@ -91,6 +95,34 @@ export default function ReportsPage() {
 
     const index = Math.abs(hash) % colors.length
     return colors[index]
+  }
+
+  // Function to determine file type based on file extension or metadata
+  const getFileType = (fileName: string) => {
+    const extension = fileName.split(".").pop()?.toLowerCase()
+
+    if (fileName.toLowerCase().includes("logbook") || fileName.toLowerCase().includes("log-book")) {
+      return "logbook"
+    } else if (
+      fileName.toLowerCase().includes("presentation") ||
+      ["ppt", "pptx", "key", "odp"].includes(extension || "")
+    ) {
+      return "presentation"
+    } else {
+      return "report"
+    }
+  }
+
+  // Function to get appropriate icon based on file type
+  const getFileIcon = (fileType: string) => {
+    switch (fileType) {
+      case "logbook":
+        return <BookOpen size={48} className="text-white" />
+      case "presentation":
+        return <PresentationIcon size={48} className="text-white" />
+      default:
+        return <FileText size={48} className="text-white" />
+    }
   }
 
   return (
@@ -125,7 +157,9 @@ export default function ReportsPage() {
         fillWidth
         horizontal="center"
         zIndex={3}
-        className={`transition-all duration-300 ${isScrolled ? "backdrop-blur-md bg-white/80 dark:bg-gray-950/80 shadow-md" : ""}`}
+        className={`transition-all duration-300 ${
+          isScrolled ? "backdrop-blur-md bg-white/80 dark:bg-gray-950/80 shadow-md" : ""
+        }`}
       >
         <Row
           data-border="rounded"
@@ -141,7 +175,7 @@ export default function ReportsPage() {
             <Button
               href="/reports"
               size="s"
-              label="Reports"
+              label="Resources"
               weight="default"
               variant="tertiary"
               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors duration-300"
@@ -161,7 +195,7 @@ export default function ReportsPage() {
               href="/reports"
               icon="fileText"
               variant="tertiary"
-              tooltip="Reports"
+              tooltip="Resources"
               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors duration-300"
             />
             <IconButton
@@ -186,7 +220,9 @@ export default function ReportsPage() {
         horizontal="center"
         border="neutral-alpha-weak"
         fillWidth
-        className={`bg-white dark:bg-gray-900 shadow-2xl transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}
+        className={`bg-white dark:bg-gray-900 shadow-2xl transition-opacity duration-1000 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
       >
         {/* Header section */}
         <Column
@@ -253,77 +289,257 @@ export default function ReportsPage() {
               marginBottom="16"
               className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400"
             >
-              Edux Reports Library
+              Edux Resource Library
             </Heading>
             <Text align="center" marginBottom="24" className="max-w-3xl text-gray-600 dark:text-gray-300">
-              Access our collection of educational reports, research papers, and learning resources. Download and use
-              these materials to enhance your learning journey.
+              Access our collection of educational reports, logbooks, presentations, and learning resources. Download
+              and use these materials to enhance your learning journey.
             </Text>
           </Column>
         </Column>
 
-        {/* Reports grid */}
-        <Column fillWidth paddingX="32" paddingBottom="64" gap="32" className="z-10 items-center">
+        {/* Files sections */}
+        <Column fillWidth paddingX="32" paddingBottom="64" gap="32" className="z-10 items-center mt-8">
           {loading ? (
             <Column horizontal="center" vertical="center" paddingY="64" gap="16">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
               <Text align="center" className="text-gray-500 dark:text-gray-400">
-                Loading reports...
+                Loading resources...
               </Text>
             </Column>
-          ) : pdfFiles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center max-w-4xl mx-auto">
-              {pdfFiles.map((file, index) => (
-                <Card
-                  key={index}
-                  fillWidth
-                  background="surface"
-                  border="neutral-alpha-weak"
-                  radius="xl"
-                  className="group transform transition-all duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
-                >
-                  <div
-                    className={`h-32 bg-gradient-to-r ${getColorForFile(file.name)} flex items-center justify-center`}
-                  >
-                    <FileText size={48} className="text-white" />
+          ) : files.length > 0 ? (
+            <>
+              {/* Reports Section */}
+              {files.filter((file) => (file.type || getFileType(file.name)) === "report").length > 0 && (
+                <Column fillWidth gap="16" className="max-w-4xl mx-auto">
+                  <Row horizontal="space-between" vertical="center" fillWidth>
+                    <Heading as="h2" variant="heading-strong-l" className="text-blue-600 dark:text-blue-400">
+                      Reports
+                    </Heading>
+                    <Text className="text-gray-500 dark:text-gray-400">
+                      {files.filter((file) => (file.type || getFileType(file.name)) === "report").length} available
+                    </Text>
+                  </Row>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center w-full">
+                    {files
+                      .filter((file) => (file.type || getFileType(file.name)) === "report")
+                      .map((file, index) => {
+                        const fileType = file.type || getFileType(file.name)
+                        return (
+                          <Card
+                            key={index}
+                            fillWidth
+                            background="surface"
+                            border="neutral-alpha-weak"
+                            radius="xl"
+                            className="group transform transition-all duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
+                          >
+                            <div
+                              className={`h-32 bg-gradient-to-r ${getColorForFile(
+                                file.name,
+                                fileType,
+                              )} flex items-center justify-center`}
+                            >
+                              {getFileIcon(fileType)}
+                            </div>
+                            <Column padding="24" gap="16">
+                              <Column gap="8">
+                                <div className="flex justify-between items-start">
+                                  <Heading as="h3" variant="heading-default-m" className="line-clamp-1">
+                                    {file.name.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, "")}
+                                  </Heading>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                    Report
+                                  </span>
+                                  <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                    {file.extension?.toUpperCase() ||
+                                      file.name.split(".").pop()?.toUpperCase() ||
+                                      "PDF"}{" "}
+                                    • {file.size}
+                                  </Text>
+                                </div>
+                              </Column>
+                              <Row horizontal="space-between" vertical="center">
+                                <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                  Last modified: {file.lastModified}
+                                </Text>
+                                <Button
+                                  variant="tertiary"
+                                  size="s"
+                                  onClick={() => handleDownload(file.name)}
+                                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                                >
+                                  <Download size={16} className="mr-2" />
+                                  Download
+                                </Button>
+                              </Row>
+                            </Column>
+                          </Card>
+                        )
+                      })}
                   </div>
-                  <Column padding="24" gap="16">
-                    <Column gap="8">
-                      <div className="flex justify-between items-start">
-                        <Heading as="h3" variant="heading-default-m" className="line-clamp-1">
-                          {file.name.replace(".pdf", "")}
-                        </Heading>
-                      </div>
-                      <Text size="s" className="text-gray-500 dark:text-gray-400">
-                        PDF Document • {file.size}
-                      </Text>
-                    </Column>
-                    <Row horizontal="space-between" vertical="center">
-                      <Text size="s" className="text-gray-500 dark:text-gray-400">
-                        Last modified: {file.lastModified}
-                      </Text>
-                      <Button
-                        variant="tertiary"
-                        size="s"
-                        onClick={() => handleDownload(file.name)}
-                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-                      >
-                        <Download size={16} className="mr-2" />
-                        Download
-                      </Button>
-                    </Row>
-                  </Column>
-                </Card>
-              ))}
-            </div>
+                </Column>
+              )}
+
+              {/* Logbooks Section */}
+              {files.filter((file) => (file.type || getFileType(file.name)) === "logbook").length > 0 && (
+                <Column fillWidth gap="16" className="max-w-4xl mx-auto mt-12">
+                  <Row horizontal="space-between" vertical="center" fillWidth>
+                    <Heading as="h2" variant="heading-strong-l" className="text-green-600 dark:text-green-400">
+                      Logbooks
+                    </Heading>
+                    <Text className="text-gray-500 dark:text-gray-400">
+                      {files.filter((file) => (file.type || getFileType(file.name)) === "logbook").length} available
+                    </Text>
+                  </Row>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center w-full">
+                    {files
+                      .filter((file) => (file.type || getFileType(file.name)) === "logbook")
+                      .map((file, index) => {
+                        const fileType = file.type || getFileType(file.name)
+                        return (
+                          <Card
+                            key={index}
+                            fillWidth
+                            background="surface"
+                            border="neutral-alpha-weak"
+                            radius="xl"
+                            className="group transform transition-all duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
+                          >
+                            <div
+                              className={`h-32 bg-gradient-to-r ${getColorForFile(
+                                file.name,
+                                fileType,
+                              )} flex items-center justify-center`}
+                            >
+                              {getFileIcon(fileType)}
+                            </div>
+                            <Column padding="24" gap="16">
+                              <Column gap="8">
+                                <div className="flex justify-between items-start">
+                                  <Heading as="h3" variant="heading-default-m" className="line-clamp-1">
+                                    {file.name.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, "")}
+                                  </Heading>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                    Logbook
+                                  </span>
+                                  <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                    {file.extension?.toUpperCase() ||
+                                      file.name.split(".").pop()?.toUpperCase() ||
+                                      "PDF"}{" "}
+                                    • {file.size}
+                                  </Text>
+                                </div>
+                              </Column>
+                              <Row horizontal="space-between" vertical="center">
+                                <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                  Last modified: {file.lastModified}
+                                </Text>
+                                <Button
+                                  variant="tertiary"
+                                  size="s"
+                                  onClick={() => handleDownload(file.name)}
+                                  className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 dark:from-green-500 dark:to-teal-500 dark:hover:from-green-600 dark:hover:to-teal-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                                >
+                                  <Download size={16} className="mr-2" />
+                                  Download
+                                </Button>
+                              </Row>
+                            </Column>
+                          </Card>
+                        )
+                      })}
+                  </div>
+                </Column>
+              )}
+
+              {/* Presentations Section */}
+              {files.filter((file) => (file.type || getFileType(file.name)) === "presentation").length > 0 && (
+                <Column fillWidth gap="16" className="max-w-4xl mx-auto mt-12">
+                  <Row horizontal="space-between" vertical="center" fillWidth>
+                    <Heading as="h2" variant="heading-strong-l" className="text-amber-600 dark:text-amber-400">
+                      Presentations
+                    </Heading>
+                    <Text className="text-gray-500 dark:text-gray-400">
+                      {files.filter((file) => (file.type || getFileType(file.name)) === "presentation").length}{" "}
+                      available
+                    </Text>
+                  </Row>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center w-full">
+                    {files
+                      .filter((file) => (file.type || getFileType(file.name)) === "presentation")
+                      .map((file, index) => {
+                        const fileType = file.type || getFileType(file.name)
+                        return (
+                          <Card
+                            key={index}
+                            fillWidth
+                            background="surface"
+                            border="neutral-alpha-weak"
+                            radius="xl"
+                            className="group transform transition-all duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
+                          >
+                            <div
+                              className={`h-32 bg-gradient-to-r ${getColorForFile(
+                                file.name,
+                                fileType,
+                              )} flex items-center justify-center`}
+                            >
+                              {getFileIcon(fileType)}
+                            </div>
+                            <Column padding="24" gap="16">
+                              <Column gap="8">
+                                <div className="flex justify-between items-start">
+                                  <Heading as="h3" variant="heading-default-m" className="line-clamp-1">
+                                    {file.name.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, "")}
+                                  </Heading>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                    Presentation
+                                  </span>
+                                  <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                    {file.extension?.toUpperCase() ||
+                                      file.name.split(".").pop()?.toUpperCase() ||
+                                      "PDF"}{" "}
+                                    • {file.size}
+                                  </Text>
+                                </div>
+                              </Column>
+                              <Row horizontal="space-between" vertical="center">
+                                <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                  Last modified: {file.lastModified}
+                                </Text>
+                                <Button
+                                  variant="tertiary"
+                                  size="s"
+                                  onClick={() => handleDownload(file.name)}
+                                  className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 dark:from-amber-500 dark:to-orange-500 dark:hover:from-amber-600 dark:hover:to-orange-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                                >
+                                  <Download size={16} className="mr-2" />
+                                  Download
+                                </Button>
+                              </Row>
+                            </Column>
+                          </Card>
+                        )
+                      })}
+                  </div>
+                </Column>
+              )}
+            </>
           ) : (
             <Column horizontal="center" vertical="center" paddingY="64" gap="16">
               <Icon name="fileText" size="xl" className="text-gray-400" />
               <Heading as="h3" variant="heading-default-m" align="center">
-                No reports available
+                No resources found
               </Heading>
               <Text align="center" className="text-gray-500 dark:text-gray-400 max-w-md">
-                There are currently no reports in the library. Check back later for updates.
+                There are currently no resources available. Check back later for updates.
               </Text>
             </Column>
           )}

@@ -14,26 +14,36 @@ export async function GET() {
 
     const files = fs.readdirSync(filesDir)
 
-    // Filter for PDF files only
-    const pdfFiles = files.filter((file) => file.toLowerCase().endsWith(".pdf"))
-
-    // Get file details
-    const fileDetails = pdfFiles.map((file) => {
+    // Get file details for all files
+    const fileDetails = files.map((file) => {
       const filePath = path.join(filesDir, file)
       const stats = fs.statSync(filePath)
+      const extension = path.extname(file).slice(1).toLowerCase()
+
+      // Determine file type based on name or extension
+      let type
+      if (file.toLowerCase().includes("logbook") || file.toLowerCase().includes("log-book")) {
+        type = "logbook"
+      } else if (file.toLowerCase().includes("presentation") || ["ppt", "pptx", "key", "odp"].includes(extension)) {
+        type = "presentation"
+      } else {
+        type = "report"
+      }
 
       return {
         name: file,
         size: formatFileSize(stats.size),
         lastModified: formatDate(stats.mtime),
         path: `/files/${file}`,
+        extension: extension,
+        type: type,
       }
     })
 
     return NextResponse.json({ files: fileDetails })
   } catch (error) {
-    console.error("Error reading PDF files:", error)
-    return NextResponse.json({ error: "Failed to read PDF files" }, { status: 500 })
+    console.error("Error reading files:", error)
+    return NextResponse.json({ error: "Failed to read files" }, { status: 500 })
   }
 }
 
