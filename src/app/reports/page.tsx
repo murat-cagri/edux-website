@@ -368,9 +368,6 @@ export default function ReportsPage() {
                                 </div>
                               </Column>
                               <Row horizontal="space-between" vertical="center">
-                                <Text size="s" className="text-gray-500 dark:text-gray-400">
-                                  Last modified: {file.lastModified}
-                                </Text>
                                 <Button
                                   variant="tertiary"
                                   size="s"
