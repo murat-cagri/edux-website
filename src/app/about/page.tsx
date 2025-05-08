@@ -385,7 +385,7 @@ export default function ContributorsPage() {
                         <Row gap="4" vertical="center">
                           <Mail size={16} className="text-gray-500 dark:text-gray-400" />
                           <Text variant="body-default-xs" className="truncate">
-                            <span className="text-gray-500 dark:text-gray-400">Email:</span> {contributor.email.split('@')[0]}
+                            <span className="text-gray-500 dark:text-gray-400"></span> {contributor.email.split('@')[0]}
                           </Text>
                         </Row>
                       </Column>
