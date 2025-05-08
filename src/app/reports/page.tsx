@@ -14,7 +14,7 @@ import {
   ThemeSwitcher,
   Background,
 } from "@/once-ui/components"
-import { Download, FileText, ArrowLeft, BookOpen, PresentationIcon } from "lucide-react"
+import {Download, FileText, ArrowLeft, BookOpen, PresentationIcon, GraduationCap} from "lucide-react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 
@@ -83,6 +83,8 @@ export default function ReportsPage() {
       report: ["from-purple-400 to-purple-600", "from-blue-400 to-blue-600", "from-indigo-400 to-indigo-600"],
       logbook: ["from-green-400 to-green-600", "from-teal-400 to-teal-600", "from-emerald-400 to-emerald-600"],
       presentation: ["from-amber-400 to-amber-600", "from-orange-400 to-orange-600", "from-red-400 to-red-600"],
+      form: ["from-purple-400 to-purple-600", "from-blue-400 to-blue-600", "from-indigo-400 to-indigo-600"],
+      survey: ["from-teal-400 to-teal-600", "from-cyan-400 to-cyan-600", "from-emerald-400 to-emerald-600"],
     }
 
     const colors = colorSets[fileType as keyof typeof colorSets] || colorSets.report
@@ -100,14 +102,16 @@ export default function ReportsPage() {
   // Function to determine file type based on file extension or metadata
   const getFileType = (fileName: string) => {
     const extension = fileName.split(".").pop()?.toLowerCase()
+    const lowerFileName = fileName.toLowerCase()
 
-    if (fileName.toLowerCase().includes("logbook") || fileName.toLowerCase().includes("log-book")) {
+    if (lowerFileName.includes("logbook") || lowerFileName.includes("log-book")) {
       return "logbook"
-    } else if (
-      fileName.toLowerCase().includes("presentation") ||
-      ["ppt", "pptx", "key", "odp"].includes(extension || "")
-    ) {
+    } else if (lowerFileName.includes("presentation") || ["ppt", "pptx", "key", "odp"].includes(extension || "")) {
       return "presentation"
+    } else if (lowerFileName.includes("survey")) {
+      return "survey"
+    } else if (lowerFileName.includes("form")) {
+      return "form"
     } else {
       return "report"
     }
@@ -120,6 +124,8 @@ export default function ReportsPage() {
         return <BookOpen size={48} className="text-white" />
       case "presentation":
         return <PresentationIcon size={48} className="text-white" />
+      case "survey":
+        return <GraduationCap size={48} className="text-white" />
       default:
         return <FileText size={48} className="text-white" />
     }
@@ -519,6 +525,142 @@ export default function ReportsPage() {
                                   size="s"
                                   onClick={() => handleDownload(file.name)}
                                   className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 dark:from-amber-500 dark:to-orange-500 dark:hover:from-amber-600 dark:hover:to-orange-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                                >
+                                  <Download size={16} className="mr-2" />
+                                  Download
+                                </Button>
+                              </Row>
+                            </Column>
+                          </Card>
+                        )
+                      })}
+                  </div>
+                </Column>
+              )}
+
+              {/* Information Forms Section */}
+              {files.filter((file) => (file.type || getFileType(file.name)) === "form").length > 0 && (
+                <Column fillWidth gap="16" className="max-w-4xl mx-auto mt-12">
+                  <Row horizontal="space-between" vertical="center" fillWidth>
+                    <Heading as="h2" variant="heading-strong-l" className="text-purple-600 dark:text-purple-400">
+                      Information Forms
+                    </Heading>
+                    <Text className="text-gray-500 dark:text-gray-400">
+                      {files.filter((file) => (file.type || getFileType(file.name)) === "form").length} available
+                    </Text>
+                  </Row>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center w-full">
+                    {files
+                      .filter((file) => (file.type || getFileType(file.name)) === "form")
+                      .map((file, index) => {
+                        return (
+                          <Card
+                            key={index}
+                            fillWidth
+                            background="surface"
+                            border="neutral-alpha-weak"
+                            radius="xl"
+                            className="group transform transition-all duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
+                          >
+                            <div className="h-32 bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center">
+                              {getFileIcon("form")}
+                            </div>
+                            <Column padding="24" gap="16">
+                              <Column gap="8">
+                                <div className="flex justify-between items-start">
+                                  <Heading as="h3" variant="heading-default-m" className="line-clamp-1">
+                                    {file.name.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, "")}
+                                  </Heading>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                    Form
+                                  </span>
+                                  <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                    {file.extension?.toUpperCase() ||
+                                      file.name.split(".").pop()?.toUpperCase() ||
+                                      "PDF"}{" "}
+                                    • {file.size}
+                                  </Text>
+                                </div>
+                              </Column>
+                              <Row horizontal="space-between" vertical="center">
+                                <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                  Last modified: {file.lastModified}
+                                </Text>
+                                <Button
+                                  variant="tertiary"
+                                  size="s"
+                                  onClick={() => handleDownload(file.name)}
+                                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                                >
+                                  <Download size={16} className="mr-2" />
+                                  Download
+                                </Button>
+                              </Row>
+                            </Column>
+                          </Card>
+                        )
+                      })}
+                  </div>
+                </Column>
+              )}
+
+              {/* Survey Results Section */}
+              {files.filter((file) => (file.type || getFileType(file.name)) === "survey").length > 0 && (
+                <Column fillWidth gap="16" className="max-w-4xl mx-auto mt-12">
+                  <Row horizontal="space-between" vertical="center" fillWidth>
+                    <Heading as="h2" variant="heading-strong-l" className="text-teal-600 dark:text-teal-400">
+                      Survey Results
+                    </Heading>
+                    <Text className="text-gray-500 dark:text-gray-400">
+                      {files.filter((file) => (file.type || getFileType(file.name)) === "survey").length} available
+                    </Text>
+                  </Row>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center w-full">
+                    {files
+                      .filter((file) => (file.type || getFileType(file.name)) === "survey")
+                      .map((file, index) => {
+                        return (
+                          <Card
+                            key={index}
+                            fillWidth
+                            background="surface"
+                            border="neutral-alpha-weak"
+                            radius="xl"
+                            className="group transform transition-all duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
+                          >
+                            <div className="h-32 bg-gradient-to-r from-teal-400 to-teal-600 flex items-center justify-center">
+                              {getFileIcon("survey")}
+                            </div>
+                            <Column padding="24" gap="16">
+                              <Column gap="8">
+                                <div className="flex justify-between items-start">
+                                  <Heading as="h3" variant="heading-default-m" className="line-clamp-1">
+                                    {file.name.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, "")}
+                                  </Heading>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300">
+                                    Survey
+                                  </span>
+                                  <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                    {file.extension?.toUpperCase() ||
+                                      file.name.split(".").pop()?.toUpperCase() ||
+                                      "PDF"}{" "}
+                                    • {file.size}
+                                  </Text>
+                                </div>
+                              </Column>
+                              <Row horizontal="space-between" vertical="center">
+                                <Text size="s" className="text-gray-500 dark:text-gray-400">
+                                  Last modified: {file.lastModified}
+                                </Text>
+                                <Button
+                                  variant="tertiary"
+                                  size="s"
+                                  onClick={() => handleDownload(file.name)}
+                                  className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 dark:from-teal-500 dark:to-cyan-500 dark:hover:from-teal-600 dark:hover:to-cyan-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                                 >
                                   <Download size={16} className="mr-2" />
                                   Download

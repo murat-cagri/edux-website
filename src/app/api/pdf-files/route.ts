@@ -19,13 +19,18 @@ export async function GET() {
       const filePath = path.join(filesDir, file)
       const stats = fs.statSync(filePath)
       const extension = path.extname(file).slice(1).toLowerCase()
+      const lowerFileName = file.toLowerCase()
 
       // Determine file type based on name or extension
       let type
-      if (file.toLowerCase().includes("logbook") || file.toLowerCase().includes("log-book")) {
+      if (lowerFileName.includes("logbook") || lowerFileName.includes("log-book")) {
         type = "logbook"
-      } else if (file.toLowerCase().includes("presentation") || ["ppt", "pptx", "key", "odp"].includes(extension)) {
+      } else if (lowerFileName.includes("presentation") || ["ppt", "pptx", "key", "odp"].includes(extension)) {
         type = "presentation"
+      } else if (lowerFileName.includes("survey") || lowerFileName.includes("result")) {
+        type = "survey"
+      } else if (lowerFileName.includes("form") || lowerFileName.includes("application")) {
+        type = "form"
       } else {
         type = "report"
       }
