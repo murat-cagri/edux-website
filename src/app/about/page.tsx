@@ -378,7 +378,7 @@ export default function ContributorsPage() {
                         <Row gap="4" vertical="center">
                           <IdCard size={16} className="text-gray-500 dark:text-gray-400" />
                           <Text variant="body-default-xs">
-                            <span className="text-gray-500 dark:text-gray-400">ID:</span> {contributor.schoolId}
+                            <span className="text-gray-500 dark:text-gray-400"></span> {contributor.schoolId}
                           </Text>
                         </Row>
 
