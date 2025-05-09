@@ -181,7 +181,7 @@ export default function ReportsPage() {
             <Button
               href="/reports"
               size="s"
-              label="Resources"
+              label="Reports"
               weight="default"
               variant="tertiary"
               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors duration-300"
@@ -201,7 +201,7 @@ export default function ReportsPage() {
               href="/reports"
               icon="fileText"
               variant="tertiary"
-              tooltip="Resources"
+              tooltip="Reports"
               className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors duration-300"
             />
             <IconButton
