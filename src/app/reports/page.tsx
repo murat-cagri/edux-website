@@ -298,8 +298,7 @@ export default function ReportsPage() {
               Edux Resource Library
             </Heading>
             <Text align="center" marginBottom="24" className="max-w-3xl text-gray-600 dark:text-gray-300">
-              Access our collection of educational reports, logbooks, presentations, and learning resources. Download
-              and use these materials to enhance your learning journey.
+              Access our collection of educational reports, logbooks, presentations, and learning resources.
             </Text>
           </Column>
         </Column>
